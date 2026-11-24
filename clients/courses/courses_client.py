@@ -1,9 +1,31 @@
-from websockets import Response
+from httpx import Response
 from clients.api_client import APIClient
 from typing import TypedDict
 
+from clients.files.files_client import FileDict
 from clients.private_http_builder import AuthenticationUserDict, get_private_http_client
+from clients.users.private_users_client import UserDict
 
+
+class CourseDict(TypedDict):
+    """
+    Описание структуры курса.
+    """
+    id: str
+    title: str
+    maxScore: int
+    minScore: int
+    description: str
+    previewFile: FileDict
+    estimatedTime: str
+    createdByUser: UserDict
+
+
+class CreateCourseResponseDict(TypedDict):
+    """
+    Описание структуры запроса на получение списка курсов.
+    """
+    course: CourseDict
 
 class GetCoursesQueryDict(TypedDict):
     """
@@ -48,7 +70,7 @@ class CoursesClient(APIClient):
         :param query: Словарь с userId.
         :return: Ответ от сервера в виде объекта httpx.Response
         """
-        return self.get("/api/v1/courses/", params=query)
+        return self.get("/api/v1/courses", params=query)
 
     def get_course_api(self, course_id) -> Response:
         """
@@ -67,7 +89,7 @@ class CoursesClient(APIClient):
         previewFileId, createdByUserId.
         :return: Ответ от сервера в виде объекта httpx.Response
         """
-        return self.post("/api/v1/courses/", json=request)
+        return self.post("/api/v1/courses", json=request)
 
     def update_course_api(self, course_id: str, request: UpdateCourseRequestDict) -> Response:
         """
@@ -87,6 +109,13 @@ class CoursesClient(APIClient):
         :return: Ответ от сервера в виде объекта httpx.Response
         """
         return self.delete(f"/api/v1/courses/{course_id}")
+
+    def create_course(self, request: CreateCourseRequestDict) -> CreateCourseResponseDict:
+        response = self.create_course_api(request)
+        print("STATUS:", response.status_code)
+        print("BODY:", response.text)
+        print("HEADERS:", dict(response.headers))
+        return response.json()
 
 
 # Добавляем builder для CoursesClient
