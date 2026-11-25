@@ -1,7 +1,6 @@
 from httpx import Response
 
 from clients.api_client import APIClient
-from typing import TypedDict
 
 # Вместо AuthenticationUserDict используем AuthenticationUserSchema
 from clients.private_http_builder import AuthenticationUserSchema, get_private_http_client
