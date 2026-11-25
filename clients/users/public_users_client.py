@@ -4,54 +4,27 @@ from clients.api_client import APIClient
 from typing import TypedDict
 
 from clients.public_http_builder import get_public_http_client
+from clients.users.users_schema import CreateUserRequestSchema, CreateUserResponseSchema
 
-
-# Добавили описание структуры пользователя
-class UserDict(TypedDict):
-    """
-    Описание структуры пользователя.
-    """
-    id: str
-    email: str
-    lastName: str
-    firstName: str
-    middleName: str
-
-class CreateUserRequestDict(TypedDict):
-    """
-    Описание структуры запроса на создание пользователя.
-    """
-    email: str
-    password: str
-    lastName: str
-    firstName: str
-    middleName: str
-
-
-class CreateUserResponseDict(TypedDict):
-    """
-    Описание структуры ответа создания пользователя.
-    """
-    user: UserDict
 
 class PublicUsersClient(APIClient):
     """
     Клиент для работы с /api/v1/users
     """
 
-    def create_user_api(self, request: CreateUserRequestDict) -> Response:
+    def create_user_api(self, request: CreateUserRequestSchema) -> Response:
         """
         Метод создает пользователя.
 
         :param request: Словарь с email, password, lastName, firstName, middleName.
         :return: Ответ от сервера в виде объекта httpx.Response
         """
-        return self.post(url="/api/v1/users", json=request)
+        return self.post(url="/api/v1/users", json=request.model_dump(by_alias=True))
 
     # Добавили новый метод
-    def create_user(self, request: CreateUserRequestDict) -> CreateUserResponseDict:
+    def create_user(self, request: CreateUserRequestSchema) -> CreateUserResponseSchema:
         response = self.create_user_api(request)
-        return response.json()
+        return CreateUserResponseSchema.model_validate_json(response.text)
 
 
 # Добавляем builder для PublicUsersClient
@@ -62,4 +35,3 @@ def get_public_users_client() -> PublicUsersClient:
     :return: Готовый к использованию PublicUsersClient.
     """
     return PublicUsersClient(client=get_public_http_client())
-
