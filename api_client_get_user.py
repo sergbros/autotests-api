@@ -3,19 +3,14 @@ from clients.users.private_users_client import get_private_users_client
 from clients.users.users_schema import CreateUserRequestSchema
 
 from clients.users import public_users_client
-from tools.fakers import get_random_email
+from tools.fakers import fake
 
 # Инициализируем клиент PublicUsersClient
 public_users_client = public_users_client.get_public_users_client()
 
 # Инициализируем запрос на создание пользователя
-create_user_request = CreateUserRequestSchema(
-    email=get_random_email(),
-    password="testPass123",
-    last_name="Testov",
-    first_name="User",
-    middle_name="Ivanovich"
-)
+create_user_request = CreateUserRequestSchema()
+
 # Отправляем POST запрос на создание пользователя
 create_user_response = public_users_client.create_user(create_user_request)
 print('Create user data:', create_user_response)
