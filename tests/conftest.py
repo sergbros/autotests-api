@@ -2,6 +2,7 @@ import pytest
 from pydantic import BaseModel, EmailStr
 
 from clients.authentication.authentication_client import AuthenticationClient, get_authentication_client
+from clients.private_http_builder import AuthenticationUserSchema
 from clients.users.public_users_client import get_public_users_client, PublicUsersClient
 # Импортируем запрос и ответ создания пользователя, модель данных пользователя
 from clients.users.users_schema import CreateUserRequestSchema, CreateUserResponseSchema, UserSchema
@@ -18,6 +19,10 @@ class UserFixture(BaseModel):
     @property
     def password(self) -> str:
         return self.request.password
+
+    @property
+    def authentication_user(self) -> AuthenticationUserSchema:
+        return AuthenticationUserSchema(email=self.email, password=self.password)
 
 @pytest.fixture
 def authentication_client() -> AuthenticationClient:
