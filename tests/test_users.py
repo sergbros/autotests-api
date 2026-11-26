@@ -4,6 +4,7 @@ from http import HTTPStatus
 
 from tools.assertions.base import assert_status_code
 from tools.assertions.schema import validate_json_schema
+from tools.assertions.users import assert_create_user_response
 
 
 def test_create_user():
@@ -14,10 +15,6 @@ def test_create_user():
     response_data = CreateUserResponseSchema.model_validate_json(response.text)
 
     assert_status_code(response.status_code, HTTPStatus.OK)
-
-    assert response_data.user.email == request.email, 'Некорректный емейл пользователя'
-    assert response_data.user.first_name == request.first_name,  'Некорректный first_name пользователя'
-    assert response_data.user.last_name == request.last_name, 'Некорректный last_name пользователя'
-    assert response_data.user.middle_name == request.middle_name, 'Некорректный middle_name пользователя'
+    assert_create_user_response(request, response_data)
 
     validate_json_schema(response.json(), response_data.model_json_schema())
