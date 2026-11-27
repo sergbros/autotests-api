@@ -2,7 +2,7 @@ from clients.errors_schema import ValidationErrorResponseSchema, ValidationError
 from clients.files.files_schema import CreateFileResponseSchema, CreateFileRequestSchema, FileSchema, \
     GetFileResponseSchema
 from tools.assertions.base import assert_equal
-from tools.assertions.errors import assert_validation_errors_response, assert_internal_error_response
+from tools.assertions.errors import assert_validation_error_response, assert_internal_error_response
 
 
 def assert_create_file_response(request: CreateFileRequestSchema, response: CreateFileResponseSchema):
@@ -67,7 +67,7 @@ def assert_create_file_with_empty_filename_response(actual: ValidationErrorRespo
             )
         ]
     )
-    assert_validation_errors_response(actual, expected)
+    assert_validation_error_response(actual, expected)
 
 
 def assert_create_file_with_empty_directory_response(actual: ValidationErrorResponseSchema):
@@ -88,7 +88,7 @@ def assert_create_file_with_empty_directory_response(actual: ValidationErrorResp
             )
         ]
     )
-    assert_validation_errors_response(actual, expected)
+    assert_validation_error_response(actual, expected)
 
 
 def assert_file_not_found_response(actual: InternalErrorResponseSchema):
@@ -100,3 +100,30 @@ def assert_file_not_found_response(actual: InternalErrorResponseSchema):
     """
     expected = InternalErrorResponseSchema(details="File not found")
     assert_internal_error_response(actual, expected)
+
+
+def assert_get_file_with_incorrect_file_id_response(actual: ValidationErrorResponseSchema):
+    """
+    Проверяет, что ответ API на запрос файла с некорректным file_id
+    соответствует ожидаемому формату ошибки валидации.
+
+    :param actual: Фактический ответ API с ошибкой валидации
+    :raises AssertionError: Если фактический ответ не соответствует ожидаемому
+    """
+    expected = ValidationErrorResponseSchema(
+        details=[
+            ValidationErrorSchema(
+                type="uuid_parsing",
+                input="incorrect-file-id",
+                context={
+                    "error": "invalid character: expected an optional prefix of `urn:uuid:` "
+                             "followed by [0-9a-fA-F-], found `i` at 1"
+                },
+                message="Input should be a valid UUID, invalid character: "
+                        "expected an optional prefix of `urn:uuid:` "
+                        "followed by [0-9a-fA-F-], found `i` at 1",
+                location=["path", "file_id"]
+            )
+        ]
+    )
+    assert_validation_error_response(actual, expected)
