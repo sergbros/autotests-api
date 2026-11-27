@@ -1,9 +1,7 @@
 from faker import Faker
 
+fake_example = Faker('ru_RU')
 
-fake = Faker('ru_RU')
-
-
-print(fake.email())
-print(fake.name())
-print(fake.address())
+print(fake_example.email())
+print(fake_example.name())
+print(fake_example.address())
