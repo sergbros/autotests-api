@@ -1,3 +1,5 @@
+from functools import lru_cache  # Импортируем функцию для кеширования
+
 from httpx import Client
 from pydantic import BaseModel
 
@@ -6,11 +8,13 @@ from clients.authentication.authentication_schema import LoginRequestSchema
 
 
 # Добавили суффикс Schema вместо Dict
-class AuthenticationUserSchema(BaseModel):  # Структура данных пользователя для авторизации
+class AuthenticationUserSchema(BaseModel,
+                               frozen=True):  # Структура данных пользователя для авторизации. Frozen — неизменяемая, чтобы объект стал хэшируемым
     email: str
     password: str
 
 
+@lru_cache(maxsize=None)
 def get_private_http_client(user: AuthenticationUserSchema) -> Client:
     """
     Функция создаёт экземпляр httpx.Client с аутентификацией пользователя.
