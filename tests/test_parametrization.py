@@ -50,7 +50,7 @@ class TestOperations:
 @pytest.mark.parametrize(
     "phone_number",
     ["+70000000011", "+70000000012", "+70000000013"],
-    ids=[   # текстовые пояснения для параметров
+    ids=[  # текстовые пояснения для параметров
         "User with money on bank account",
         "User without money on bank account",
         "User without operations on bank account"
@@ -60,7 +60,7 @@ def test_identifiers(phone_number: str):
     pass
 
 
-users = {   # текстовые пояснения для параметров через словарь (ключ-значение)
+users = {  # текстовые пояснения для параметров через словарь (ключ-значение)
     "+70000000011": "User with money on bank account",
     "+70000000012": "User without money on bank account",
     "+70000000013": "User without operations on bank account"
@@ -78,7 +78,19 @@ def test_identifiers_2(phone_number: str):
 
 @pytest.mark.parametrize(
     "value",
-    [1, pytest.param(2, marks=pytest.mark.skip(reason="Not supported")), 3] # пример пропуска теста
+    [1, pytest.param(2, marks=pytest.mark.skip(reason="Not supported")), 3]  # пример пропуска теста
 )
 def test_skip_example(value):
     pass
+
+
+@pytest.mark.parametrize(
+    "input_value",
+    [
+        pytest.param(1, marks=pytest.mark.xfail(reason="Known issue with 1")),
+        2,
+        pytest.param(3, marks=pytest.mark.skip(reason="Feature not implemented for 3")),
+    ]
+)
+def test_xfail_function(input_value):
+    assert input_value != 1
