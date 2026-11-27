@@ -74,3 +74,11 @@ users = {   # текстовые пояснения для параметров 
 )
 def test_identifiers_2(phone_number: str):
     pass
+
+
+@pytest.mark.parametrize(
+    "value",
+    [1, pytest.param(2, marks=pytest.mark.skip(reason="Not supported")), 3] # пример пропуска теста
+)
+def test_skip_example(value):
+    pass
